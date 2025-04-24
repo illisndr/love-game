@@ -131,6 +131,7 @@ function childDecision(wantChild) {
 
     const cheated = Math.random() < 0.5;
     if (cheated) {
+        player.suicide = true;
         return endGame('Позже выяснилось, что ребёнок был не от вас. Вы покончили с собой от горя.');
     }
     nameChild();
