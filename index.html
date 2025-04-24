@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Love Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff8f0;
+            color: #2e2e2e;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+            transition: all 0.5s;
+        }
+        h1, h2 {
+            color: #cc5c4c;
+        }
+        button {
+            background-color: #cc5c4c;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #a94638;
+        }
+    </style>
+</head>
+<body>
+    <h1>Love Game</h1>
+    <div id="game"></div>
+    <script>
+        const gameElement = document.getElementById("game");
+        let gender = "";
+        let health = 100;
+        let happiness = 50;
+        let morality = 50;
+        let stage = 0;
+        let partner = null;
+
+        const malePartners = [
+            { name: "Артём", desc: "180см, карие глаза, спокойный и добрый" },
+            { name: "Максим", desc: "175см, зелёные глаза, шумный и весёлый" },
+            { name: "Илья", desc: "183см, серые глаза, интроверт и мечтатель" }
+        ];
+        const femalePartners = [
+            { name: "Аня", desc: "168см, зелёные глаза, романтичная и мечтательная" },
+            { name: "Катя", desc: "165см, карие глаза, прагматичная и спокойная" },
+            { name: "Лена", desc: "170см, голубые глаза, весёлая и спонтанная" }
+        ];
+
+        function startGame() {
+            health = 100;
+            happiness = 50;
+            morality = 50;
+            stage = 0;
+            partner = null;
+            gameElement.innerHTML = `
+                <h2>Выбери свой пол</h2>
+                <button onclick="selectGender('male')">Мужчина</button>
+                <button onclick="selectGender('female')">Женщина</button>
+            `;
+        }
+
+        function selectGender(selectedGender) {
+            gender = selectedGender;
+            const list = gender === "male" ? femalePartners : malePartners;
+            let options = "";
+            list.forEach((p, i) => {
+                options += `<button onclick="choosePartner(${i})">${p.name} — ${p.desc}</button><br>`;
+            });
+            gameElement.innerHTML = `
+                <h2>Выбери партнёра</h2>
+                <p>Помни, доверие — не всегда оправдано...</p>
+                ${options}
+            `;
+        }
+
+        function choosePartner(index) {
+            partner = gender === "male" ? femalePartners[index] : malePartners[index];
+            nextStage();
+        }
+
+        function nextStage() {
+            stage++;
+            if (stage === 1) {
+                gameElement.innerHTML = `
+                    <h2>Прошло несколько лет...</h2>
+                    <p>Вы с ${partner.name} в браке. Хотите ли вы завести ребёнка?</p>
+                    <button onclick="childChance()">Да</button>
+                    <button onclick="endGame('Вы решили не заводить детей. Вы живёте спокойно вдвоем.')">Нет</button>
+                `;
+            } else if (stage === 2) {
+                randomEvents();
+            } else if (stage === 3) {
+                raiseChild();
+            }
+        }
+
+        function childChance() {
+            const childIsYours = Math.random() < 0.5;
+            if (childIsYours) {
+                happiness += 10;
+                gameElement.innerHTML = `
+                    <h2>У вас родился ребёнок!</h2>
+                    <p>Поздравляем, ${partner.name} родила тебе ребёнка. Теперь вы настоящая семья.</p>
+                    <button onclick="nextStage()">Продолжить</button>
+                `;
+            } else {
+                endGame("Ребёнок оказался не от тебя. Осознав предательство, ты совершаешь самоубийство.");
+            }
+        }
+
+        function randomEvents() {
+            const events = [
+                { text: "Ты выиграл в лотерею! +10 к счастью.", effect: () => happiness += 10 },
+                { text: "Ты потерял работу. -20 к здоровью.", effect: () => health -= 20 },
+                { text: "Партнёр устроил романтический ужин. +10 к морали.", effect: () => morality += 10 },
+                { text: "Вы попали в аварию. -30 к здоровью.", effect: () => health -= 30 },
+                { text: "Ты встретил старого друга. +5 к счастью.", effect: () => happiness += 5 }
+            ];
+            const event = events[Math.floor(Math.random() * events.length)];
+            event.effect();
+            gameElement.innerHTML = `
+                <h2>Случайное событие</h2>
+                <p>${event.text}</p>
+                <p>Здоровье: ${health}, Счастье: ${happiness}, Мораль: ${morality}</p>
+                <button onclick="nextStage()">Продолжить</button>
+            `;
+        }
+
+        function raiseChild() {
+            const stages = [
+                "Ребёнок пошёл в детский сад и подрался с другим ребёнком.",
+                "Школьник принёс первую двойку. Вы решаете — наказывать или понять.",
+                "Подросток влюбился. Вы пытаетесь объяснить, что важно быть собой.",
+                "Он(а) поступает в университет и уезжает из дома.",
+                "Вы с партнёром остаетесь вдвоем и размышляете о жизни."
+            ];
+            const stageText = stages[Math.floor(Math.random() * stages.length)];
+            gameElement.innerHTML = `
+                <h2>Развитие ребёнка</h2>
+                <p>${stageText}</p>
+                <p>Здоровье: ${health}, Счастье: ${happiness}, Мораль: ${morality}</p>
+                <button onclick="finalEnding()">Финал</button>
+            `;
+        }
+
+        function finalEnding() {
+            let ending = "Вы счастливо прожили жизнь и вырастили ребёнка.";
+            if (health < 30) ending = "Вы умерли молодым из-за проблем со здоровьем.";
+            else if (happiness > 70 && morality > 70) ending = "Вы стали примером для будущих поколений.";
+            else if (happiness < 30) ending = "Вы впали в депрессию из-за рутины и одиночества.";
+            gameElement.innerHTML = `
+                <h2>Конец игры</h2>
+                <p>${ending}</p>
+                <p>Здоровье: ${health}, Счастье: ${happiness}, Мораль: ${morality}</p>
+                <button onclick="startGame()">Играть снова</button>
+            `;
+        }
+
+        function endGame(text) {
+            gameElement.innerHTML = `
+                <h2>Конец игры</h2>
+                <p>${text}</p>
+                <button onclick="startGame()">Играть снова</button>
+            `;
+        }
+
+        startGame();
+    </script>
+</body>
+</html>
