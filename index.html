@@ -78,7 +78,10 @@ const malePartners = [
     { name: "Никита", desc: "Серьёзный, синие глаза, занимается бизнесом." },
     { name: "Михаил", desc: "Юморной и надёжный, любит путешествовать." },
     { name: "Даниил", desc: "Молчаливый, но с большим сердцем. Работает в ИТ." },
-    { name: "Роман", desc: "Амбициозный, но немного замкнутый. Ищет стабильности." }
+    { name: "Роман", desc: "Амбициозный, но немного замкнутый. Ищет стабильности." },
+    { name: "Кирилл", desc: "Любит музыку и пишет стихи. Немного мечтатель." },
+    { name: "Сергей", desc: "Ответственный, трудолюбивый, хочет крепкую семью." },
+    { name: "Влад", desc: "Весёлый и уверенный в себе. Играет в футбол и мечтает о доме у моря." }
 ];
 
 const femalePartners = [
@@ -87,13 +90,14 @@ const femalePartners = [
     { name: "Катя", desc: "Чёрные волосы, спортивная, немного замкнутая." },
     { name: "Марина", desc: "Общительная, любит психологию и помогает другим." },
     { name: "Оля", desc: "Тихая и романтичная, увлекается поэзией." },
-    { name: "Света", desc: "Весёлая, энергичная, мечтает о большой семье." }
+    { name: "Света", desc: "Весёлая, энергичная, мечтает о большой семье." },
+    { name: "Наташа", desc: "Сильная и независимая. Мечтает построить карьеру." },
+    { name: "Вика", desc: "Добрая и заботливая, любит готовить и заниматься садом." },
+    { name: "Юля", desc: "Стремится к приключениям, не любит однообразие." }
 ];
 
 function shuffleArray(array) { return array.sort(() => Math.random() - 0.5); }
-
 function getRandomPartners(partnersArray) { return shuffleArray(partnersArray).slice(0, 3); }
-
 function show(content) { game.innerHTML = content; }
 
 function startGame() {
@@ -206,7 +210,27 @@ function affectStats(h, m, f, r, next) {
     player.stats.morality += m;
     player.stats.finances += f;
     player.stats.relationship += r;
-    raiseChild(next + 1);
+    if (!checkStats()) raiseChild(next + 1);
+}
+
+function checkStats() {
+    if (player.stats.health < 30) {
+        endGame("Из-за ухудшения здоровья вы не справились с жизненными трудностями и преждевременно ушли.");
+        return true;
+    }
+    if (player.stats.finances < 20) {
+        show(`<h2>Финансовый кризис</h2><p>Вы оказались на грани банкротства.</p><button onclick="startGame()">Переиграть</button>`);
+        return true;
+    }
+    if (player.stats.relationship < 20) {
+        endGame("Партнёр больше не мог терпеть постоянные конфликты. Вы остались одни.");
+        return true;
+    }
+    if (player.stats.morality < 20) {
+        show(`<h2>Моральный выбор</h2><p>Вам предложили взятку. Приняв её, вы потеряли уважение окружающих.</p><button onclick="startGame()">Переиграть</button>`);
+        return true;
+    }
+    return false;
 }
 
 function randomEvent() {
@@ -232,36 +256,25 @@ function changeEmotion() {
 
 function endGame(message) {
     if (player.suicide) {
-        show(`<h2>Вы покончили с собой.</h2>
-            <p>${message}</p>
-            <button onclick="enterAfterlife()">Войти в загробный мир</button>
-            <button onclick="startGame()">Переиграть</button>`);
+        show(`<h2>Вы покончили с собой.</h2><p>${message}</p><button onclick="enterAfterlife()">Войти в загробный мир</button><button onclick="startGame()">Переиграть</button>`);
     } else {
         show(`<h2>Конец игры</h2><p>${message}</p><br><button onclick="startGame()">Переиграть</button>`);
     }
 }
 
 function enterAfterlife() {
-    show(`<h2>Загробный мир</h2>
-        <p>Вы оказались в загробном мире. Здесь вам предстоит сделать выбор: вернуться в прошлое или принять свою судьбу.</p>
-        <button onclick="chooseAfterlife(true)">Вернуться</button>
-        <button onclick="chooseAfterlife(false)">Принять свою судьбу</button>`);
+    show(`<h2>Загробный мир</h2><p>Вы оказались в загробном мире. Здесь вам предстоит сделать выбор: вернуться в прошлое или принять свою судьбу.</p><button onclick="chooseAfterlife(true)">Вернуться</button><button onclick="chooseAfterlife(false)">Принять свою судьбу</button>`);
 }
 
 function chooseAfterlife(chooseReturn) {
     if (chooseReturn) {
-        show(`<h2>Возвращение в мир живых</h2>
-            <p>Вы получили шанс вернуться. Но это изменит вашу судьбу навсегда. Вам предстоит новая жизнь.</p>
-            <button onclick="startGame()">Начать новую жизнь</button>`);
+        show(`<h2>Возвращение в мир живых</h2><p>Вы получили шанс вернуться. Но это изменит вашу судьбу навсегда. Вам предстоит новая жизнь.</p><button onclick="startGame()">Начать новую жизнь</button>`);
     } else {
-        show(`<h2>Вы приняли свою судьбу</h2>
-            <p>Теперь вы стали душой, которая помогает другим в загробном мире. Ваша мораль и поступки определяют вашу роль.</p>
-            <button onclick="startGame()">Переиграть</button>`);
+        show(`<h2>Вы приняли свою судьбу</h2><p>Теперь вы стали душой, которая помогает другим в загробном мире. Ваша мораль и поступки определяют вашу роль.</p><button onclick="startGame()">Переиграть</button>`);
     }
 }
 
 startGame();
 </script>
-
 </body>
 </html>
