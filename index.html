@@ -1,163 +1,195 @@
-<!DOCTYPE html>
-<html lang="ru">
+<!DOCTYPE html><html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Жизненный Путь</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f4f8;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-    #game {
-      max-width: 600px;
-      padding: 20px;
-      background-color: white;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
-      border-radius: 20px;
-      text-align: center;
-      font-size: 1.3em;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 1em;
-      margin: 10px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
-    }
-    button:hover {
-      background-color: #3e8e41;
-    }
-    input {
-      padding: 10px;
-      margin: 10px;
-      width: 80%;
-      font-size: 1em;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Симулятор Жизни</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f2f2f2;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #game {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #4a90e2;
+            color: white;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #357ab8;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 80%;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-  <div id="game"></div>
+<div id="game"></div><script>
+const game = document.getElementById('game');
+let player = {
+    gender: '',
+    name: '',
+    partner: {},
+    childName: '',
+    stats: { health: 100, morality: 50, finances: 50, relationship: 50 },
+    stage: 'start',
+};
 
-  <script>
-    const game = document.getElementById('game');
-    let playerName = '';
-    let partner = {};
-    let childName = '';
-    let gender = '';
+const malePartners = [
+    { name: "Алексей", desc: "Кареглазый, высокий, любит спорт и готовить." },
+    { name: "Игорь", desc: "Невысокий, зелёные глаза, очень добрый и творческий." },
+    { name: "Никита", desc: "Серьёзный, синие глаза, занимается бизнесом." },
+];
+const femalePartners = [
+    { name: "Аня", desc: "Длинные волосы, голубые глаза, учится на актрису." },
+    { name: "Лена", desc: "Рыжеволосая, любит животных и музыку." },
+    { name: "Катя", desc: "Чёрные волосы, спортивная, немного замкнутая." },
+];
 
-    function startGame() {
-      game.innerHTML = `
-        <p>Добро пожаловать в игру "Жизненный Путь". Введите своё имя:</p>
-        <input id="nameInput" placeholder="Ваше имя"/>
-        <br/>
-        <button onclick="chooseGender()">Далее</button>
-      `;
+function show(content) {
+    game.innerHTML = content;
+}
+
+function startGame() {
+    show(`<h2>Выберите пол</h2>
+        <button onclick="chooseGender('male')">Мужчина</button>
+        <button onclick="chooseGender('female')">Женщина</button>`);
+}
+
+function chooseGender(gender) {
+    player.gender = gender;
+    show(`<h2>Введите имя</h2>
+        <input type="text" id="nameInput" placeholder="Ваше имя">
+        <button onclick="saveName()">Продолжить</button>`);
+}
+
+function saveName() {
+    const name = document.getElementById('nameInput').value.trim();
+    if (name !== '') {
+        player.name = name;
+        choosePartner();
+    }
+}
+
+function choosePartner() {
+    const options = player.gender === 'male' ? femalePartners : malePartners;
+    let html = `<h2>Выберите партнёра</h2>`;
+    options.forEach((partner, i) => {
+        html += `<button onclick="selectPartner(${i})">${partner.name}: ${partner.desc}</button><br>`;
+    });
+    show(html);
+}
+
+function selectPartner(index) {
+    const options = player.gender === 'male' ? femalePartners : malePartners;
+    player.partner = options[index];
+    show(`<h2>Прошло пару лет...</h2>
+          <p>Вы живёте с ${player.partner.name}. Хотите завести ребёнка?</p>
+          <p><i>Иногда жизнь может быть непредсказуемой...</i></p>
+          <button onclick="childDecision(true)">Да</button>
+          <button onclick="childDecision(false)">Нет</button>`);
+}
+
+function childDecision(wantChild) {
+    if (!wantChild) return endGame('Вы решили жить для себя и наслаждаться свободой.');
+
+    const cheated = Math.random() < 0.5;
+    if (cheated) {
+        return endGame('Позже выяснилось, что ребёнок был не от вас. Вы покончили с собой от горя.');
+    }
+    nameChild();
+}
+
+function nameChild() {
+    show(`<h2>Поздравляем! У вас родился ребёнок.</h2>
+          <p>Введите имя для ребёнка:</p>
+          <input type="text" id="childName">
+          <button onclick="saveChildName()">Продолжить</button>`);
+}
+
+function saveChildName() {
+    const name = document.getElementById('childName').value.trim();
+    if (name !== '') {
+        player.childName = name;
+        raiseChild(0);
+    }
+}
+
+const childStages = [
+    'Ребёнок начал ходить и говорить.',
+    'Первый день в школе.',
+    'Подросток начал задавать сложные вопросы о жизни.',
+    'Выпускной. Ваша поддержка сыграла большую роль.'
+];
+
+function raiseChild(stage) {
+    if (stage >= childStages.length) {
+        return endGame('Вы вырастили прекрасного ребёнка. Это был нелёгкий, но важный путь.');
     }
 
-    function chooseGender() {
-      playerName = document.getElementById('nameInput').value.trim();
-      if (!playerName) return alert('Пожалуйста, введите имя');
-      game.innerHTML = `
-        <p>Привет, ${playerName}! Кто ты по полу?</p>
-        <button onclick="showPartners('male')">Мужчина</button>
-        <button onclick="showPartners('female')">Женщина</button>
-      `;
+    randomEvent();
+
+    show(`<h2>${childStages[stage]}</h2>
+          <p>Как вы поступите?</p>
+          <button onclick="affectStats(5,0,5,5, ${stage})">Поддержать</button>
+          <button onclick="affectStats(-5,5,-10,0, ${stage})">Игнорировать</button>`);
+}
+
+function affectStats(h, m, f, r, next) {
+    player.stats.health += h;
+    player.stats.morality += m;
+    player.stats.finances += f;
+    player.stats.relationship += r;
+    raiseChild(next + 1);
+}
+
+function randomEvent() {
+    const events = [
+        'Вы потеряли работу.',
+        'Вы выиграли в лотерею!',
+        'Ваш партнёр заболел.',
+        'Ваш ребёнок сбежал из школы.',
+        'Вы нашли новый источник дохода.'
+    ];
+    if (Math.random() < 0.3) {
+        const event = events[Math.floor(Math.random() * events.length)];
+        alert("Случайное событие: " + event);
     }
+}
 
-    function showPartners(selectedGender) {
-      gender = selectedGender;
-      const partners = {
-        male: [
-          { name: "Аня", hair: "русые", eyes: "зелёные", height: "165 см", trait: "весёлая и заботливая" },
-          { name: "Катя", hair: "чёрные", eyes: "карие", height: "170 см", trait: "амбициозная и умная" },
-          { name: "Лена", hair: "рыжие", eyes: "голубые", height: "160 см", trait: "творческая и мечтательная" }
-        ],
-        female: [
-          { name: "Максим", hair: "тёмные", eyes: "серые", height: "180 см", trait: "сильный и добрый" },
-          { name: "Игорь", hair: "светлые", eyes: "голубые", height: "175 см", trait: "спокойный и надёжный" },
-          { name: "Саша", hair: "каштановые", eyes: "зелёные", height: "178 см", trait: "харизматичный и весёлый" }
-        ]
-      };
+function endGame(message) {
+    let summary = `
+        <p>Итоги:</p>
+        <p>Здоровье: ${player.stats.health}</p>
+        <p>Мораль: ${player.stats.morality}</p>
+        <p>Финансы: ${player.stats.finances}</p>
+        <p>Отношения: ${player.stats.relationship}</p>
+    `;
+    show(`<h2>Конец игры</h2><p>${message}</p>${summary}<br><button onclick="startGame()">Переиграть</button>`);
+}
 
-      let options = partners[selectedGender].map((p, index) => `
-        <button onclick="choosePartner(${index})">
-          ${p.name} — ${p.hair} волосы, ${p.eyes} глаза, рост ${p.height}, ${p.trait}
-        </button>
-      `).join('');
-
-      game.innerHTML = `<p>Выбери партнёра:</p>${options}`;
-    }
-
-    function choosePartner(index) {
-      const allPartners = {
-        male: [
-          { name: "Аня", hair: "русые", eyes: "зелёные", height: "165 см", trait: "весёлая и заботливая" },
-          { name: "Катя", hair: "чёрные", eyes: "карие", height: "170 см", trait: "амбициозная и умная" },
-          { name: "Лена", hair: "рыжие", eyes: "голубые", height: "160 см", trait: "творческая и мечтательная" }
-        ],
-        female: [
-          { name: "Максим", hair: "тёмные", eyes: "серые", height: "180 см", trait: "сильный и добрый" },
-          { name: "Игорь", hair: "светлые", eyes: "голубые", height: "175 см", trait: "спокойный и надёжный" },
-          { name: "Саша", hair: "каштановые", eyes: "зелёные", height: "178 см", trait: "харизматичный и весёлый" }
-        ]
-      };
-      partner = allPartners[gender][index];
-      game.innerHTML = `
-        <p>Прошло несколько лет. ${playerName} и ${partner.name} поженились. У вас крепкий брак...</p>
-        <p>Но помни — даже в идеальных отношениях бывают испытания.</p>
-        <button onclick="haveChild()">Завести ребёнка</button>
-      `;
-    }
-
-    function haveChild() {
-      const cheated = Math.random() < 0.5;
-      if (cheated) {
-        game.innerHTML = `
-          <p>К сожалению, через несколько месяцев ты узнал(а), что ребёнок не твой...</p>
-          <p>Твоё сердце не выдержало — игра окончена.</p>
-          <button onclick="startGame()">Переиграть</button>
-        `;
-      } else {
-        game.innerHTML = `
-          <p>Поздравляем! ${partner.name} родила здорового малыша.</p>
-          <p>Выберите имя для ребёнка:</p>
-          <input id="childNameInput" placeholder="Имя ребёнка"/>
-          <button onclick="raiseChild()">Продолжить</button>
-        `;
-      }
-    }
-
-    function raiseChild() {
-      childName = document.getElementById('childNameInput').value.trim();
-      if (!childName) return alert('Пожалуйста, введите имя ребёнка');
-      const events = [
-        `${childName} пошёл(ла) в первый класс!`,
-        `${childName} заболел(а) и вы провели несколько дней вместе.`,
-        `${childName} завёл(а) друзей и пошёл(ла) в кружок.`,
-        `${childName} окончил(а) школу с отличием.`,
-        `${childName} столкнулся(лась) с трудностями подросткового возраста.`
-      ];
-      const event = events[Math.floor(Math.random() * events.length)];
-      game.innerHTML = `
-        <p>Вы растите ${childName}. Время летит...</p>
-        <p>${event}</p>
-        <p>Спустя годы, ты оглядываешься назад и осознаешь: жизнь была полна испытаний и чудес.</p>
-        <p>Конец. Спасибо за игру!</p>
-        <button onclick="startGame()">Переиграть</button>
-      `;
-    }
-
-    startGame();
-  </script>
-</body>
+startGame();
+</script></body>
 </html>
