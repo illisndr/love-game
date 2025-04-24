@@ -67,6 +67,7 @@ let player = {
     stats: { health: 100, morality: 50, finances: 50, relationship: 50 },
     emotionalState: 'neutral', // новое состояние
     stage: 'start',
+    isDead: false, // флаг для смерти персонажа
 };
 
 const malePartners = [
@@ -198,14 +199,30 @@ function randomEvent() {
 }
 
 function endGame(message) {
-    let summary = `
-        <p>Итоги:</p>
-        <div class="morality">Мораль: ${player.stats.morality}</div>
-        <div class="health">Здоровье: ${player.stats.health}</div>
-        <div class="finances">Финансы: ${player.stats.finances}</div>
-        <div class="relationship">Отношения: ${player.stats.relationship}</div>
-    `;
-    show(`<h2>Конец игры</h2><p>${message}</p>${summary}<br><button onclick="startGame()">Переиграть</button>`);
+    if (player.isDead) {
+        show(`<h2>Вы умерли.</h2><p>${message}</p><button onclick="enterAfterlife()">Войти в загробный мир</button>`);
+    } else {
+        show(`<h2>Конец игры</h2><p>${message}</p><br><button onclick="startGame()">Переиграть</button>`);
+    }
+}
+
+function enterAfterlife() {
+    show(`<h2>Загробный мир</h2>
+          <p>Вы оказались в загробном мире. Здесь вам предстоит сделать выбор: вернуться в прошлое или принять свою судьбу.</p>
+          <button onclick="chooseAfterlife(true)">Вернуться</button>
+          <button onclick="chooseAfterlife(false)">Принять свою судьбу</button>`);
+}
+
+function chooseAfterlife(chooseReturn) {
+    if (chooseReturn) {
+        show(`<h2>Возвращение в мир живых</h2>
+              <p>Вы получили шанс вернуться. Но это изменит вашу судьбу навсегда. Вам предстоит новая жизнь.</p>
+              <button onclick="startGame()">Начать новую жизнь</button>`);
+    } else {
+        show(`<h2>Вы приняли свою судьбу</h2>
+              <p>Теперь вы стали душой, которая помогает другим в загробном мире. Ваша мораль и поступки определяют вашу роль.</p>
+              <button onclick="startGame()">Переиграть</button>`);
+    }
 }
 
 startGame();
