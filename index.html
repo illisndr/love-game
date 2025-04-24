@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="ru">
+<!DOCTYPE html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,6 +49,10 @@
             color: #555;
             margin: 10px 0;
         }
+        .morality, .health, .finances, .relationship {
+            font-weight: bold;
+            margin: 5px;
+        }
     </style>
 </head>
 <body>
@@ -60,6 +65,7 @@ let player = {
     partner: {},
     childName: '',
     stats: { health: 100, morality: 50, finances: 50, relationship: 50 },
+    emotionalState: 'neutral', // новое состояние
     stage: 'start',
 };
 
@@ -161,7 +167,11 @@ function raiseChild(stage) {
           <div class="event-text">${eventText}</div>
           <p>Как вы поступите?</p>
           <button onclick="affectStats(5,0,5,5, ${stage})">Поддержать</button>
-          <button onclick="affectStats(-5,5,-10,0, ${stage})">Игнорировать</button>`);
+          <button onclick="affectStats(-5,5,-10,0, ${stage})">Игнорировать</button>
+          <div class="morality">Мораль: ${player.stats.morality}</div>
+          <div class="health">Здоровье: ${player.stats.health}</div>
+          <div class="finances">Финансы: ${player.stats.finances}</div>
+          <div class="relationship">Отношения: ${player.stats.relationship}</div>`);
 }
 
 function affectStats(h, m, f, r, next) {
@@ -178,7 +188,8 @@ function randomEvent() {
         'Вы выиграли в лотерею!',
         'Ваш партнёр заболел.',
         'Ваш ребёнок сбежал из школы.',
-        'Вы нашли новый источник дохода.'
+        'Вы нашли новый источник дохода.',
+        'Ваша мораль оказалась под угрозой, когда вам предложили взятку.'
     ];
     if (Math.random() < 0.3) {
         return 'Случайное событие: ' + events[Math.floor(Math.random() * events.length)];
@@ -189,10 +200,10 @@ function randomEvent() {
 function endGame(message) {
     let summary = `
         <p>Итоги:</p>
-        <p>Здоровье: ${player.stats.health}</p>
-        <p>Мораль: ${player.stats.morality}</p>
-        <p>Финансы: ${player.stats.finances}</p>
-        <p>Отношения: ${player.stats.relationship}</p>
+        <div class="morality">Мораль: ${player.stats.morality}</div>
+        <div class="health">Здоровье: ${player.stats.health}</div>
+        <div class="finances">Финансы: ${player.stats.finances}</div>
+        <div class="relationship">Отношения: ${player.stats.relationship}</div>
     `;
     show(`<h2>Конец игры</h2><p>${message}</p>${summary}<br><button onclick="startGame()">Переиграть</button>`);
 }
