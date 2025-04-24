@@ -43,10 +43,16 @@
             width: 80%;
             margin-top: 10px;
         }
+        .event-text {
+            font-style: italic;
+            color: #555;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
-<div id="game"></div><script>
+<div id="game"></div>
+<script>
 const game = document.getElementById('game');
 let player = {
     gender: '',
@@ -149,9 +155,10 @@ function raiseChild(stage) {
         return endGame('Вы вырастили прекрасного ребёнка. Это был нелёгкий, но важный путь.');
     }
 
-    randomEvent();
+    const eventText = randomEvent();
 
     show(`<h2>${childStages[stage]}</h2>
+          <div class="event-text">${eventText}</div>
           <p>Как вы поступите?</p>
           <button onclick="affectStats(5,0,5,5, ${stage})">Поддержать</button>
           <button onclick="affectStats(-5,5,-10,0, ${stage})">Игнорировать</button>`);
@@ -174,9 +181,9 @@ function randomEvent() {
         'Вы нашли новый источник дохода.'
     ];
     if (Math.random() < 0.3) {
-        const event = events[Math.floor(Math.random() * events.length)];
-        alert("Случайное событие: " + event);
+        return 'Случайное событие: ' + events[Math.floor(Math.random() * events.length)];
     }
+    return '';
 }
 
 function endGame(message) {
@@ -191,5 +198,6 @@ function endGame(message) {
 }
 
 startGame();
-</script></body>
+</script>
+</body>
 </html>
