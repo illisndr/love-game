@@ -68,6 +68,7 @@ let player = {
     emotionalState: 'neutral', // новое состояние
     stage: 'start',
     isDead: false, // флаг для смерти персонажа
+    suicide: false // флаг для суицида
 };
 
 const malePartners = [
@@ -199,8 +200,11 @@ function randomEvent() {
 }
 
 function endGame(message) {
-    if (player.isDead) {
-        show(`<h2>Вы умерли.</h2><p>${message}</p><button onclick="enterAfterlife()">Войти в загробный мир</button>`);
+    if (player.suicide) {
+        show(`<h2>Вы покончили с собой.</h2>
+              <p>${message}</p>
+              <button onclick="enterAfterlife()">Войти в загробный мир</button>
+              <button onclick="startGame()">Переиграть</button>`);
     } else {
         show(`<h2>Конец игры</h2><p>${message}</p><br><button onclick="startGame()">Переиграть</button>`);
     }
