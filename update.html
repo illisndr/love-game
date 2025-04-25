@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Секреты партнёров</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #game {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div id="game">
+    <h1>Семейная история</h1>
+    <div id="output"></div>
+    <button onclick="endGame()">Завершить игру</button>
+</div>
+
+<script>
+    const malePartners = [
+        { name: "Алексей", desc: "Кареглазый, высокий, любит спорт и готовить.", secret: "Алексей изменял вам с другой женщиной." },
+        { name: "Игорь", desc: "Невысокий, зелёные глаза, очень добрый и творческий.", secret: "Игорь скрывает криминальное прошлое." },
+        { name: "Никита", desc: "Серьёзный, синие глаза, занимается бизнесом.", secret: "Никита обманул вас в финансовых вопросах." },
+        { name: "Михаил", desc: "Юморной и надёжный, любит путешествовать.", secret: "Михаил скрывает проблемы с алкоголем." },
+        { name: "Даниил", desc: "Молчаливый, но с большим сердцем. Работает в ИТ.", secret: "Даниил страдает от депрессии и скрывает это." },
+        { name: "Роман", desc: "Амбициозный, но немного замкнутый. Ищет стабильности.", secret: "Роман имеет скрытую зависимость от азартных игр." },
+        { name: "Кирилл", desc: "Любит музыку и пишет стихи. Немного мечтатель.", secret: "Кирилл скрывает свою тягу к наркотикам." },
+        { name: "Сергей", desc: "Ответственный, трудолюбивый, хочет крепкую семью.", secret: "Сергей скрывает свои большие долги." },
+        { name: "Влад", desc: "Весёлый и уверенный в себе. Играет в футбол и мечтает о доме у моря.", secret: "Влад скрывает свои проблемы с агрессией." }
+    ];
+
+    const femalePartners = [
+        { name: "Аня", desc: "Длинные волосы, голубые глаза, учится на актрису.", secret: "Аня скрывает измену с другом." },
+        { name: "Лена", desc: "Рыжеволосая, любит животных и музыку.", secret: "Лена скрывает свою зависимость от наркотиков." },
+        { name: "Катя", desc: "Чёрные волосы, спортивная, немного замкнутая.", secret: "Катя прячет свою финансовую нестабильность." },
+        { name: "Марина", desc: "Общительная, любит психологию и помогает другим.", secret: "Марина скрывает, что имеет долгую историю психических расстройств." },
+        { name: "Оля", desc: "Тихая и романтичная, увлекается поэзией.", secret: "Оля скрывает свою склонность к саморазрушению." },
+        { name: "Света", desc: "Весёлая, энергичная, мечтает о большой семье.", secret: "Света скрывает своё прошлое в отношениях с насилием." },
+        { name: "Наташа", desc: "Сильная и независимая. Мечтает построить карьеру.", secret: "Наташа скрывает своё нежелание заводить детей." },
+        { name: "Вика", desc: "Добрая и заботливая, любит готовить и заниматься садом.", secret: "Вика скрывает, что обманывала вас по поводу своей работы." },
+        { name: "Юля", desc: "Стремится к приключениям, не любит однообразие.", secret: "Юля скрывает свои сексуальные предпочтения." }
+    ];
+
+    const player = {
+        partner: malePartners[0],
+        stats: {
+            relationship: 100,
+            finances: 100,
+            health: 100,
+            childBehaviour: 100,
+            emotionalState: 'счастлив'
+        }
+    };
+
+    function revealPartnerSecret(partner) {
+        if (Math.random() < 0.4) {
+            partner.revealed = true;
+            showSecretEffect(partner);
+        }
+    }
+
+    function showSecretEffect(partner) {
+        const secret = partner.secret;
+        let effectMessage = '';
+
+        if (partner.name === "Алексей" || partner.name === "Марина") {
+            effectMessage += `<p>Ваш партнёр скрывал обман, и теперь ваши отношения сильно пострадали.</p>`;
+            player.stats.relationship -= 30;
+        } else if (partner.name === "Игорь" || partner.name === "Лена") {
+            effectMessage += `<p>Ваш партнёр скрывал опасные зависимости, и это поставило вашу семью под угрозу.</p>`;
+            player.stats.health -= 20;
+        } else if (partner.name === "Никита" || partner.name === "Катя") {
+            effectMessage += `<p>Секреты партнёра обрушили финансовую стабильность, что негативно повлияло на ваше будущее.</p>`;
+            player.stats.finances -= 20;
+        } else if (partner.name === "Михаил" || partner.name === "Марина") {
+            effectMessage += `<p>Скрытое психическое состояние партнёра оказало давление на вас и вашу семью.</p>`;
+            player.stats.emotionalState = 'расстроен';
+        } else if (partner.name === "Даниил" || partner.name === "Оля") {
+            effectMessage += `<p>Скрытые проблемы с зависимостью или депрессией партнёра изменили динамику отношений.</p>`;
+            player.stats.health -= 10;
+        } else if (partner.name === "Роман" || partner.name === "Света") {
+            effectMessage += `<p>Секреты партнёра обрушили вашу психоэмоциональную стабильность и поведение детей.</p>`;
+            player.stats.childBehaviour -= 15;
+        } else if (partner.name === "Кирилл" || partner.name === "Наташа") {
+            effectMessage += `<p>Нежелание партнёра заводить детей или скрытые финансовые проблемы серьёзно повлияли на вашу жизнь.</p>`;
+            player.stats.childBehaviour -= 10;
+        } else if (partner.name === "Сергей" || partner.name === "Юля") {
+            effectMessage += `<p>Секреты партнёра отразились на вашей стабильности и на отношениях в целом.</p>`;
+            player.stats.relationship -= 15;
+        } else if (partner.name === "Влад" || partner.name === "Вика") {
+            effectMessage += `<p>Скрытые проблемы с агрессией или обманами партнёра нарушили гармонию в семье.</p>`;
+            player.stats.emotionalState = 'сильно расстроен';
+        }
+
+        effectMessage += `<p>Ребёнок замечает напряжение и может начать испытывать проблемы с поведением или здоровьем.</p>`;
+        player.stats.childBehaviour -= 10;
+
+        show(`<h2>Секрет раскрыт!</h2><p>${secret}</p>` + effectMessage);
+    }
+
+    function affectEnding() {
+        if (player.stats.relationship <= 50) {
+            show(`<h2>Негативная концовка</h2><p>Отношения разрушены, и вы не смогли сохранить семью из-за секрета партнёра.</p>`);
+        } else if (player.stats.childBehaviour <= 30) {
+            show(`<h2>Негативная концовка</h2><p>Ребёнок переживает из-за всего, что происходит в семье, и это влияет на его будущее.</p>`);
+        } else {
+            show(`<h2>Позитивная концовка</h2><p>Несмотря на трудности, вы смогли поддержать друг друга и создать крепкую семью.</p>`);
+        }
+    }
+
+    function endGame() {
+        if (Math.random() < 0.4) {
+            revealPartnerSecret(player.partner);
+        } else {
+            show(`<h2>Секрет так и не был раскрыт</h2><p>Вы продолжили жить в неведении, но это не всегда плохо…</p>`);
+        }
+        affectEnding();
+    }
+
+    function show(text) {
+        document.getElementById('output').innerHTML = text;
+    }
+</script>
+
+</body>
+</html>
