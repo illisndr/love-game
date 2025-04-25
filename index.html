@@ -275,6 +275,15 @@ function chooseAfterlife(chooseReturn) {
 }
 
 startGame();
-</script>
+</script> 
+    <script>
+  fetch('update.html')
+    .then(res => res.text())
+    .then(html => {
+      const script = document.createElement('script');
+      script.innerHTML = html;
+      document.body.appendChild(script);
+    });
+    </script>
 </body>
 </html>
